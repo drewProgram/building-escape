@@ -22,12 +22,24 @@ private:
 	UPROPERTY(EditAnywhere)
 	float Reach;
 	
+	UPROPERTY()
 	UPhysicsHandleComponent* PhysicsHandle;
+	UPROPERTY()
 	UInputComponent* InputComponent;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+private:
+	void FindPhysicsHandle();
+	void SetupInputComponent();
+
+	FHitResult GetFirstPhysicsBodyInReach() const;
+
+	FVector GetPlayersReach() const;
+
+	FVector GetPlayersWorldPos() const;
 
 public:	
 	// Called every frame
@@ -35,8 +47,4 @@ public:
 
 	void Grab();
 	void Release();
-	void FindPhysicsHandle();
-	void SetupInputComponent();
-
-	FHitResult GetFirstPhysicsBodyInReach() const;
 };
