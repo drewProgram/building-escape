@@ -26,10 +26,10 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	float InitialYaw;
-	float CurrentYaw;
+	FVector InitialPosition;
+	float CurrentHeight;
 	UPROPERTY(EditAnywhere, Category="Opening")
-	float OpenAngle;
+	float OpenHeight;
 
 	float DoorLastOpened;
 	UPROPERTY(EditAnywhere, Category = "Opening")

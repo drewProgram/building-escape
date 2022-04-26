@@ -14,7 +14,7 @@ UOpenDoor::UOpenDoor()
 	:
 	OpenDoorSound(false),
 	CloseDoorSound(true),
-	OpenAngle(90.f),
+	OpenHeight(90.f),
 	DoorLastOpened(0.f),
 	DoorOpenIntensity(2.f),
 	PressurePlate(nullptr),
@@ -32,9 +32,9 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InitialYaw = GetOwner()->GetActorRotation().Yaw;
-	CurrentYaw = InitialYaw;
-	OpenAngle += InitialYaw;
+	InitialPosition = GetOwner()->GetActorLocation();
+	CurrentHeight = InitialPosition.Z;
+	OpenHeight += InitialPosition.Z;
 
 	FindPressurePlate();
 
@@ -68,13 +68,13 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 void UOpenDoor::OpenDoor(float DeltaTime)
 {
-	CurrentYaw = GetOwner()->GetActorRotation().Yaw;
+	CurrentHeight = GetOwner()->GetActorLocation().Z;
 	// CurrentYaw, TargetYaw, DeltaTime, degrees per second
 	//float NewDoorYaw = FMath::FInterpConstantTo(GetOwner()->GetActorRotation().Yaw, TargetYaw, DeltaTime, 45);
-	float NewDoorYaw = FMath::FInterpTo(CurrentYaw, OpenAngle, DeltaTime, DoorOpenIntensity);
-	FRotator NewDoorRotator = { 0.f, NewDoorYaw, 0.f };
+	float NewDoorHeight = FMath::FInterpTo(CurrentHeight, OpenHeight, DeltaTime, DoorOpenIntensity);
+	FVector NewDoorPosition = { InitialPosition.X, InitialPosition.Y, NewDoorHeight };
 
-	GetOwner()->SetActorRotation(NewDoorRotator);
+	GetOwner()->SetActorLocation(NewDoorPosition);
 
 	if (!AudioComponent)
 	{
@@ -90,11 +90,13 @@ void UOpenDoor::OpenDoor(float DeltaTime)
 
 void UOpenDoor::CloseDoor(float DeltaTime)
 {
-	CurrentYaw = GetOwner()->GetActorRotation().Yaw;
-	float NewDoorYaw = FMath::FInterpTo(CurrentYaw, InitialYaw, DeltaTime, DoorCloseIntensity);
-	FRotator NewDoorRotation = { 0.f, NewDoorYaw, 0.f };
+	CurrentHeight = GetOwner()->GetActorLocation().Z;
 
-	GetOwner()->SetActorRotation(NewDoorRotation);
+	float NewDoorHeight = FMath::FInterpTo(CurrentHeight, InitialPosition.Z, DeltaTime, DoorCloseIntensity);
+	FVector NewDoorPosition = { InitialPosition.X, InitialPosition.Y, NewDoorHeight };
+	
+
+	GetOwner()->SetActorLocation(NewDoorPosition);
 
 	if (!AudioComponent)
 	{
